@@ -36,25 +36,27 @@ func (d *Digit) Encode(num int) (string, error) {
 	}
 
 	var (
-		i      int
-		buf    bytes.Buffer
-		numStr = strconv.Itoa(num)
+		numStr  = strconv.Itoa(num)
+		builder struct {
+			hits int
+			buf  bytes.Buffer
+		}
 	)
 
-	for ; i < numLen; i++ {
-		pos := byteToInt(numStr[i])
-		char := d.spool[i][pos]
-		buf.WriteByte(char)
+	for ; builder.hits < numLen; builder.hits++ {
+		pos := byteToInt(numStr[builder.hits])
+		char := d.spool[builder.hits][pos]
+		builder.buf.WriteByte(char)
 	}
 
-	lastChar := byteToInt(numStr[i-1])
-	for ; i < d.strLen-1; i++ {
-		char := d.spool[lastChar][i%10]
-		buf.WriteByte(char)
+	lastChar := byteToInt(numStr[builder.hits-1])
+	for ; builder.hits < d.strLen-1; builder.hits++ {
+		char := d.spool[lastChar][builder.hits%10]
+		builder.buf.WriteByte(char)
 	}
 
-	buf.WriteByte(d.lenMask[numLen-1])
-	return buf.String(), nil
+	builder.buf.WriteByte(d.lenMask[numLen-1])
+	return builder.buf.String(), nil
 }
 
 // Decode decodes a string into an integer.
