@@ -115,13 +115,13 @@ func NewDigit(config Config) (*Digit, error) {
 		return nil, errors.New("config.LenMask is required")
 	}
 
-	m := make(map[byte]struct{})
+	m := make(map[int32]struct{})
 	for _, b := range config.LenMask {
-		if _, ok := m[byte(b)]; ok {
+		if _, ok := m[b]; ok {
 			return nil, errors.New("config.LenMask must not contain duplicate characters")
 		}
 
-		m[byte(b)] = struct{}{}
+		m[b] = struct{}{}
 	}
 
 	if config.Spool == nil {
@@ -141,13 +141,13 @@ func NewDigit(config Config) (*Digit, error) {
 			return nil, errors.New("each element of config.Spool must have a length of 10")
 		}
 
-		m := make(map[byte]struct{})
+		m := make(map[int32]struct{})
 		for _, b := range s {
-			if _, ok := m[byte(b)]; ok {
+			if _, ok := m[b]; ok {
 				return nil, errors.New("each element of config.Spool must not contain duplicate characters")
 			}
 
-			m[byte(b)] = struct{}{}
+			m[b] = struct{}{}
 		}
 	}
 
