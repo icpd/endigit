@@ -1,17 +1,19 @@
 package endigit
 
 import (
+	"math/rand"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestDigit(t *testing.T) {
-	strLen := 16
+	strLen := 5
 	lenMask, spool := factor(strLen)
 
 	digit, err := NewDigit(Config{
-		StrLen:  16,
+		StrLen:  strLen,
 		LenMask: lenMask,
 		Spool:   spool,
 	})
@@ -19,7 +21,8 @@ func TestDigit(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	encode, err := digit.Encode(12)
+	num := 1291
+	encode, err := digit.Encode(num)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -29,6 +32,29 @@ func TestDigit(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, 12, decode)
+	assert.Equal(t, num, decode)
 	t.Log(decode)
+}
+
+func factor(strLen int) (string, []string) {
+	letters := []rune("abcdefghijklmnopqrstuvwxyz0123456789")
+
+	rand.New(rand.NewSource(time.Now().UnixNano()))
+
+	rand.Shuffle(len(letters), func(i, j int) {
+		letters[i], letters[j] = letters[j], letters[i]
+	})
+
+	mask := string(letters[:strLen-1])
+
+	var spool []string
+	for i := 0; i < strLen; i++ {
+		rand.Shuffle(len(letters), func(i, j int) {
+			letters[i], letters[j] = letters[j], letters[i]
+		})
+
+		spool = append(spool, string(letters[:10]))
+	}
+
+	return mask, spool
 }

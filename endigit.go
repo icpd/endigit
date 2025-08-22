@@ -25,6 +25,8 @@ type Digit struct {
 //
 // It takes an integer number as input and returns a string representation of the encoded number.
 // An error is returned if the number is negative or too large to be encoded.
+//
+// num length must be less than strLen
 func (d *Digit) Encode(num int) (string, error) {
 	if num < 0 {
 		return "", errors.New("num must be positive")
@@ -32,7 +34,7 @@ func (d *Digit) Encode(num int) (string, error) {
 
 	numLen := digitLen(num)
 	if numLen+1 > d.strLen {
-		return "", errors.New("num too large")
+		return "", errors.New("num length exceeds strLen")
 	}
 
 	var (
@@ -128,8 +130,8 @@ func NewDigit(config Config) (*Digit, error) {
 		return nil, errors.New("config.Spool is required")
 	}
 
-	if len(config.LenMask) != config.StrLen-1 {
-		return nil, errors.New("config.LenMask length must be equal to config.StrLen-1")
+	if len(config.LenMask) < config.StrLen-1 {
+		return nil, errors.New("config.LenMask length must be at least StrLen-1")
 	}
 
 	if len(config.Spool) != config.StrLen {
